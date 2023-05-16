@@ -13,13 +13,15 @@ import (
 type Config struct {
 	BscRpcEndpoint string
 	BcApiEndpoint  string
-	LogFilePath    string
-	KeystorePath   string
 	Account        string
 	GasLimit       string
 	MaxGasPrice    string
 
 	StakeMangerAddress string
+
+	//read from config
+	LogFilePath  string
+	KeystorePath string
 }
 
 func Load(configFilePath string) (*Config, error) {

@@ -25,7 +25,7 @@ install:
 
 abi:
 	@echo " > \033[32mGenabi...\033[0m "
-	abigen --abi ./bindings/DepositContract/depositcontract_abi.json --pkg deposit_contract --type DepositContract --out ./bindings/DepositContract/DepositContract.go
+	abigen --abi ./bindings/StakeManager/StakeManager_abi.json --pkg stake_manager --type StakeManager --out ./bindings/StakeManager/StakeManager.go
 
 
 clean:
