@@ -29,9 +29,10 @@ type Task struct {
 
 	stakeMangerAddress common.Address
 
-	dev bool
-
 	// need init on start()
+	dev            bool
+	bscSideChainId string
+
 	client               *shared.Client
 	contractStakeManager *stake_manager.StakeManager
 }
