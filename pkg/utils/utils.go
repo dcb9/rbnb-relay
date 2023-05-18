@@ -2,11 +2,13 @@ package utils
 
 import (
 	"crypto/sha256"
+	"time"
 
 	bncCmnTypes "github.com/stafiprotocol/go-sdk/common/types"
 )
 
-var RetryLimit = 30
+var RetryLimit = 60
+var RetryInterval = time.Second * 2
 
 var (
 	EraStateUninitialized      = uint8(0)

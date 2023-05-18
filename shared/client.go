@@ -234,8 +234,8 @@ func (c *Client) TransactionReceipt(hash common.Hash) (*types.Receipt, error) {
 	return c.conn.TransactionReceipt(context.Background(), hash)
 }
 
-func (c *Client) TransactionByHash(ctx context.Context, hash common.Hash) (tx *types.Transaction, isPending bool, err error) {
-	return c.conn.TransactionByHash(ctx, hash)
+func (c *Client) TransactionByHash(hash common.Hash) (tx *types.Transaction, isPending bool, err error) {
+	return c.conn.TransactionByHash(context.Background(), hash)
 }
 
 func (c *Client) TransactionSender(ctx context.Context, tx *types.Transaction, block common.Hash, index uint) (common.Address, error) {

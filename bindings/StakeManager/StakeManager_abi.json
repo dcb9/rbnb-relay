@@ -197,13 +197,37 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "_era",
+                "type": "uint256"
+            }
+        ],
+        "name": "allPoolEraIs",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_era",
+                "type": "uint256"
+            },
+            {
                 "internalType": "enum EraState",
-                "name": "eraState",
+                "name": "_eraState",
                 "type": "uint8"
             },
             {
                 "internalType": "bool",
-                "name": "skipUninitialized",
+                "name": "_skipUninitialized",
                 "type": "bool"
             }
         ],
@@ -227,26 +251,6 @@
             }
         ],
         "name": "changeThreshold",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "claim",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_poolAddress",
-                "type": "address"
-            }
-        ],
-        "name": "claimWithPool",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -721,6 +725,11 @@
         "name": "poolInfoOf",
         "outputs": [
             {
+                "internalType": "uint256",
+                "name": "era",
+                "type": "uint256"
+            },
+            {
                 "internalType": "enum EraState",
                 "name": "eraState",
                 "type": "uint8"
@@ -1143,6 +1152,13 @@
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -1164,6 +1180,19 @@
             }
         ],
         "name": "withdrawRelayerFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_poolAddress",
+                "type": "address"
+            }
+        ],
+        "name": "withdrawWithPool",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

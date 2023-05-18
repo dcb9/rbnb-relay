@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"math/big"
 	"rbnb-relay/pkg/utils"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"rbnb-relay/bindings/StakePool"
 )
 
 func (t *Task) voteHandler() error {
@@ -27,13 +30,15 @@ func (t *Task) voteHandler() error {
 	if err != nil {
 		return err
 	}
+
+	// case: currentEra==latestEra && allPoolIsOperateAckExecuted
+	// no need deal
 	if currentEra.Cmp(latestEra) == 0 {
-		allOperateAckExecuted, err := t.contractStakeManager.AllPoolEraStateIs(&latestCallOpts, utils.EraStateOperateAckExecuted, false)
+		allPoolIsOperateAckExecuted, err := t.contractStakeManager.AllPoolEraStateIs(&latestCallOpts, currentEra, utils.EraStateOperateAckExecuted, false)
 		if err != nil {
 			return err
 		}
-		// no need deal
-		if allOperateAckExecuted {
+		if allPoolIsOperateAckExecuted {
 			return nil
 		}
 	}
@@ -45,29 +50,29 @@ func (t *Task) voteHandler() error {
 
 	willUseEra := new(big.Int).Add(latestEra, big.NewInt(1))
 
+	// case: willUseEra > latestEra && !hasVoted
 	// vote newEra
 	if willUseEra.Cmp(latestEra) > 0 {
-
 		newRewardList := make([]*big.Int, 0)
-		timestampList := make([]*big.Int, 0)
+		lastRewardTimestampList := make([]*big.Int, 0)
 
 		for _, pool := range bondedPools {
 			latestRewardTimestampOnChain, err := t.contractStakeManager.LatestRewardTimestampOf(&latestCallOpts, pool)
 			if err != nil {
 				return err
 			}
-			reward, lastTimestamp, err := t.NewRewardOnBcAfterTimestamp(pool, latestRewardTimestampOnChain.Int64())
+			reward, lastRewardTimestamp, err := t.NewRewardOnBcAfterTimestamp(pool, latestRewardTimestampOnChain.Int64())
 			if err != nil {
 				return err
 			}
-			newReward := new(big.Int).Mul(big.NewInt(reward), big.NewInt(1e10))
-			newRewardList = append(newRewardList, newReward)
+			newReward := new(big.Int).Mul(big.NewInt(reward), big.NewInt(1e10)) //decimals 8 on bc, 18 on bsc
 
-			timestampList = append(timestampList, big.NewInt(lastTimestamp))
+			newRewardList = append(newRewardList, newReward)
+			lastRewardTimestampList = append(lastRewardTimestampList, big.NewInt(lastRewardTimestamp))
 		}
 
 		// check voted
-		proposalId := NewEraProposalID(willUseEra, bondedPools, newRewardList, timestampList)
+		proposalId := NewEraProposalID(willUseEra, bondedPools, newRewardList, lastRewardTimestampList)
 		hasVoted, err := t.contractStakeManager.HasVoted(&latestCallOpts, proposalId, t.client.Opts().From)
 		if err != nil {
 			return err
@@ -77,36 +82,44 @@ func (t *Task) voteHandler() error {
 			if err != nil {
 				return err
 			}
-			tx, err := t.contractStakeManager.NewEra(t.client.Opts(), willUseEra, bondedPools, newRewardList, timestampList)
+			tx, err := t.contractStakeManager.NewEra(t.client.Opts(), willUseEra, bondedPools, newRewardList, lastRewardTimestampList)
 			t.client.UnlockOpts()
 			if err != nil {
 				return err
 			}
 
-			receipt, err := t.client.TransactionReceipt(tx.Hash())
+			err = t.waitTxOk(tx.Hash())
 			if err != nil {
-				return err
+				return errors.Wrap(err, "wait Tx failed")
 			}
-			logrus.Info("receipt", receipt)
 		}
-		//todo wait newEraExecuted
-
-	}
-
-	executeNewEraIter, err := t.contractStakeManager.FilterExecuteNewEra(&bind.FilterOpts{}, []*big.Int{willUseEra})
-	if err != nil {
-		return err
-	}
-	executeNewEraHeight := big.NewInt(0)
-	for executeNewEraIter.Next() {
-		executeNewEraHeight = executeNewEraIter.Event.Block
 	}
 
 	newEraExecutedCallOpts := bind.CallOpts{
-		Pending:     false,
-		From:        [20]byte{},
-		BlockNumber: executeNewEraHeight,
-		Context:     context.Background(),
+		Pending: false,
+		From:    [20]byte{},
+		Context: context.Background(),
+	}
+
+	//wait newEraExecuted
+	for {
+		executeNewEraIter, err := t.contractStakeManager.FilterExecuteNewEra(&bind.FilterOpts{}, []*big.Int{willUseEra})
+		if err != nil {
+			return err
+		}
+		executeNewEraHeight := big.NewInt(0)
+		for executeNewEraIter.Next() {
+			executeNewEraHeight = executeNewEraIter.Event.Block
+			break
+		}
+		if executeNewEraHeight.Cmp(big.NewInt(0)) == 0 {
+			logrus.Debug("wait newEraExecuted, will retry.")
+			time.Sleep(utils.RetryInterval)
+			continue
+		}
+
+		newEraExecutedCallOpts.BlockNumber = executeNewEraHeight
+		break
 	}
 
 	// vote operate and operate ack
@@ -116,9 +129,17 @@ func (t *Task) voteHandler() error {
 		if err != nil {
 			return err
 		}
-		if poolInfo.EraState == utils.EraStateNewEraExecuted {
-
-			minDelegate := big.NewInt(0)
+		// case: poolEra==WillUseEra && eraState==EraStateNewEraExecuted
+		// delegate or undelegate
+		if poolInfo.Era == willUseEra && poolInfo.EraState == utils.EraStateNewEraExecuted {
+			contractStakePool, err := stake_pool.NewStakePool(pool, t.client.Client())
+			if err != nil {
+				return err
+			}
+			minDelegate, err := contractStakePool.GetMinDelegation(&latestCallOpts)
+			if err != nil {
+				return err
+			}
 
 			pendingDelegate, err := t.contractStakeManager.PendingDelegateOf(&newEraExecutedCallOpts, pool)
 			if err != nil {
@@ -131,13 +152,13 @@ func (t *Task) voteHandler() error {
 			}
 
 			switch {
-			case pendingDelegate.Cmp(big.NewInt(0)) > 0 && pendingUndelegate.Cmp(big.NewInt(0)) == 0:
-				if pendingDelegate.Cmp(minDelegate) < 0 {
-					return fmt.Errorf("unknown pending state, pendingDelegate %s pendingUndelegate %s", pendingDelegate, pendingUndelegate)
-				}
+			case pendingDelegate.Cmp(minDelegate) >= 0 && pendingUndelegate.Cmp(big.NewInt(0)) == 0:
+				t.contractStakeManager.GetValidatorsOf()
+
 			case pendingDelegate.Cmp(big.NewInt(0)) == 0 && pendingUndelegate.Cmp(big.NewInt(0)) > 0:
+
 			default:
-				return fmt.Errorf("unknown pending state, pendingDelegate %s pendingUndelegate %s", pendingDelegate, pendingUndelegate)
+				return fmt.Errorf("unknown pending value state, pendingDelegate %s pendingUndelegate %s", pendingDelegate, pendingUndelegate)
 			}
 
 		}
