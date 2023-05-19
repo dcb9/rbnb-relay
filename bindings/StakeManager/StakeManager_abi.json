@@ -11,49 +11,11 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "block",
+                "name": "rate",
                 "type": "uint256"
             }
         ],
         "name": "ExecuteNewEra",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "era",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "block",
-                "type": "uint256"
-            }
-        ],
-        "name": "ExecuteOperate",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "era",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "block",
-                "type": "uint256"
-            }
-        ],
-        "name": "ExecuteOperateAck",
         "type": "event"
     },
     {
@@ -67,6 +29,44 @@
             }
         ],
         "name": "ProposalExecuted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "govDelegated",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "localDelegated",
+                "type": "uint256"
+            }
+        ],
+        "name": "RepairDelegated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "era",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "poolAddress",
+                "type": "address"
+            }
+        ],
+        "name": "Settle",
         "type": "event"
     },
     {
@@ -132,9 +132,46 @@
                 "internalType": "uint256",
                 "name": "burnAmount",
                 "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "unstakeIndex",
+                "type": "uint256"
             }
         ],
         "name": "Unstake",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "staker",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "stakePool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "tokenAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "unstakeIndexList",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "Withdraw",
         "type": "event"
     },
     {
@@ -198,54 +235,6 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_era",
-                "type": "uint256"
-            }
-        ],
-        "name": "allPoolEraIs",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_era",
-                "type": "uint256"
-            },
-            {
-                "internalType": "enum EraState",
-                "name": "_eraState",
-                "type": "uint8"
-            },
-            {
-                "internalType": "bool",
-                "name": "_skipUninitialized",
-                "type": "bool"
-            }
-        ],
-        "name": "allPoolEraStateIs",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
                 "name": "_newThreshold",
                 "type": "uint256"
             }
@@ -270,7 +259,63 @@
     },
     {
         "inputs": [],
+        "name": "delegatedDiffLimit",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "delegatedOfValidator",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "eraOffset",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "eraRate",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -448,56 +493,6 @@
                 "internalType": "uint256",
                 "name": "_unbondingDuration",
                 "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_stakePoolAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_validator",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_bond",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_unbond",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_active",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_pendingDelegate",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_rate",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_totalRTokenSupply",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_totalProtocolFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_era",
-                "type": "uint256"
             }
         ],
         "name": "init",
@@ -556,6 +551,74 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_stakePoolAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_validator",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_govDelegated",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_bond",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_unbond",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_pendingDelegate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_rate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_totalRTokenSupply",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_totalProtocolFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_era",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_latestRewardtimestamp",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_undistributedReward",
+                "type": "uint256"
+            }
+        ],
+        "name": "migrate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "minStakeAmount",
         "outputs": [
@@ -582,7 +645,7 @@
             },
             {
                 "internalType": "uint256[]",
-                "name": "_undistributedRewardList",
+                "name": "_newRewardList",
                 "type": "uint256[]"
             },
             {
@@ -597,59 +660,16 @@
         "type": "function"
     },
     {
-        "inputs": [
+        "inputs": [],
+        "name": "nextUnstakeIndex",
+        "outputs": [
             {
                 "internalType": "uint256",
-                "name": "_era",
+                "name": "",
                 "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_poolAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "enum Action",
-                "name": "_action",
-                "type": "uint8"
-            },
-            {
-                "internalType": "address[]",
-                "name": "_valList",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_amountList",
-                "type": "uint256[]"
             }
         ],
-        "name": "operate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_era",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_poolAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_successOpIndexList",
-                "type": "uint256[]"
-            }
-        ],
-        "name": "operateAck",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -666,30 +686,6 @@
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "pendingOperate",
-        "outputs": [
-            {
-                "internalType": "enum Action",
-                "name": "action",
-                "type": "uint8"
             }
         ],
         "stateMutability": "view",
@@ -728,11 +724,6 @@
                 "internalType": "uint256",
                 "name": "era",
                 "type": "uint256"
-            },
-            {
-                "internalType": "enum EraState",
-                "name": "eraState",
-                "type": "uint8"
             },
             {
                 "internalType": "uint256",
@@ -850,19 +841,6 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "relayerFee",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address",
@@ -920,11 +898,6 @@
             },
             {
                 "internalType": "uint256",
-                "name": "_relayerFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
                 "name": "_minStakeAmount",
                 "type": "uint256"
             },
@@ -952,9 +925,27 @@
                 "internalType": "uint256",
                 "name": "_transferGas",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_delegatedDiffLimit",
+                "type": "uint256"
             }
         ],
         "name": "setParams",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_poolAddress",
+                "type": "address"
+            }
+        ],
+        "name": "settle",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -970,19 +961,6 @@
         "name": "stake",
         "outputs": [],
         "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "stakeSwitch",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -1014,13 +992,6 @@
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "toggleStakeSwitch",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -1118,6 +1089,40 @@
         "name": "unstake",
         "outputs": [],
         "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "unstakeAtIndex",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "era",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "receiver",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {

@@ -28,6 +28,24 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "validator",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "delegate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address[]",
                 "name": "validatorList",
                 "type": "address[]"
@@ -38,7 +56,7 @@
                 "type": "uint256[]"
             }
         ],
-        "name": "delegate",
+        "name": "delegateVals",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -70,6 +88,51 @@
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "validator",
+                "type": "address"
+            }
+        ],
+        "name": "getPendingUndelegateTime",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getRelayerFee",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getRequestInFly",
+        "outputs": [
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
             }
         ],
         "stateMutability": "view",
@@ -158,6 +221,24 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "validator",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "undelegate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address[]",
                 "name": "validatorList",
                 "type": "address[]"
@@ -168,7 +249,7 @@
                 "type": "uint256[]"
             }
         ],
-        "name": "undelegate",
+        "name": "undelegateVals",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

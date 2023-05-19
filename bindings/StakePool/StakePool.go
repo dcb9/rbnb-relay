@@ -30,7 +30,7 @@ var (
 
 // StakePoolMetaData contains all meta data concerning the StakePool contract.
 var StakePoolMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"checkAndClaimReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkAndClaimUndelegated\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"validatorList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amountList\",\"type\":\"uint256[]\"}],\"name\":\"delegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validator\",\"type\":\"address\"}],\"name\":\"getDelegated\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getMinDelegation\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalDelegated\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_stakeMangerAddress\",\"type\":\"address\"}],\"name\":\"init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validatorSrc\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"validatorDst\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"redelegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"stakeManagerAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"stakingAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"validatorList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amountList\",\"type\":\"uint256[]\"}],\"name\":\"undelegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdrawForStaker\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
+	ABI: "[{\"inputs\":[],\"name\":\"checkAndClaimReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkAndClaimUndelegated\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"delegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"validatorList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amountList\",\"type\":\"uint256[]\"}],\"name\":\"delegateVals\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validator\",\"type\":\"address\"}],\"name\":\"getDelegated\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getMinDelegation\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validator\",\"type\":\"address\"}],\"name\":\"getPendingUndelegateTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getRelayerFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getRequestInFly\",\"outputs\":[{\"internalType\":\"uint256[3]\",\"name\":\"\",\"type\":\"uint256[3]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalDelegated\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_stakeMangerAddress\",\"type\":\"address\"}],\"name\":\"init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validatorSrc\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"validatorDst\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"redelegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"stakeManagerAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"stakingAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"validator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"undelegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"validatorList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amountList\",\"type\":\"uint256[]\"}],\"name\":\"undelegateVals\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdrawForStaker\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
 }
 
 // StakePoolABI is the input ABI used to generate the binding from.
@@ -241,6 +241,99 @@ func (_StakePool *StakePoolCallerSession) GetMinDelegation() (*big.Int, error) {
 	return _StakePool.Contract.GetMinDelegation(&_StakePool.CallOpts)
 }
 
+// GetPendingUndelegateTime is a free data retrieval call binding the contract method 0xfec0e154.
+//
+// Solidity: function getPendingUndelegateTime(address validator) view returns(uint256)
+func (_StakePool *StakePoolCaller) GetPendingUndelegateTime(opts *bind.CallOpts, validator common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _StakePool.contract.Call(opts, &out, "getPendingUndelegateTime", validator)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// GetPendingUndelegateTime is a free data retrieval call binding the contract method 0xfec0e154.
+//
+// Solidity: function getPendingUndelegateTime(address validator) view returns(uint256)
+func (_StakePool *StakePoolSession) GetPendingUndelegateTime(validator common.Address) (*big.Int, error) {
+	return _StakePool.Contract.GetPendingUndelegateTime(&_StakePool.CallOpts, validator)
+}
+
+// GetPendingUndelegateTime is a free data retrieval call binding the contract method 0xfec0e154.
+//
+// Solidity: function getPendingUndelegateTime(address validator) view returns(uint256)
+func (_StakePool *StakePoolCallerSession) GetPendingUndelegateTime(validator common.Address) (*big.Int, error) {
+	return _StakePool.Contract.GetPendingUndelegateTime(&_StakePool.CallOpts, validator)
+}
+
+// GetRelayerFee is a free data retrieval call binding the contract method 0xc2117d82.
+//
+// Solidity: function getRelayerFee() view returns(uint256)
+func (_StakePool *StakePoolCaller) GetRelayerFee(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _StakePool.contract.Call(opts, &out, "getRelayerFee")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// GetRelayerFee is a free data retrieval call binding the contract method 0xc2117d82.
+//
+// Solidity: function getRelayerFee() view returns(uint256)
+func (_StakePool *StakePoolSession) GetRelayerFee() (*big.Int, error) {
+	return _StakePool.Contract.GetRelayerFee(&_StakePool.CallOpts)
+}
+
+// GetRelayerFee is a free data retrieval call binding the contract method 0xc2117d82.
+//
+// Solidity: function getRelayerFee() view returns(uint256)
+func (_StakePool *StakePoolCallerSession) GetRelayerFee() (*big.Int, error) {
+	return _StakePool.Contract.GetRelayerFee(&_StakePool.CallOpts)
+}
+
+// GetRequestInFly is a free data retrieval call binding the contract method 0x3048ecfa.
+//
+// Solidity: function getRequestInFly() view returns(uint256[3])
+func (_StakePool *StakePoolCaller) GetRequestInFly(opts *bind.CallOpts) ([3]*big.Int, error) {
+	var out []interface{}
+	err := _StakePool.contract.Call(opts, &out, "getRequestInFly")
+
+	if err != nil {
+		return *new([3]*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([3]*big.Int)).(*[3]*big.Int)
+
+	return out0, err
+
+}
+
+// GetRequestInFly is a free data retrieval call binding the contract method 0x3048ecfa.
+//
+// Solidity: function getRequestInFly() view returns(uint256[3])
+func (_StakePool *StakePoolSession) GetRequestInFly() ([3]*big.Int, error) {
+	return _StakePool.Contract.GetRequestInFly(&_StakePool.CallOpts)
+}
+
+// GetRequestInFly is a free data retrieval call binding the contract method 0x3048ecfa.
+//
+// Solidity: function getRequestInFly() view returns(uint256[3])
+func (_StakePool *StakePoolCallerSession) GetRequestInFly() ([3]*big.Int, error) {
+	return _StakePool.Contract.GetRequestInFly(&_StakePool.CallOpts)
+}
+
 // GetTotalDelegated is a free data retrieval call binding the contract method 0xf2976871.
 //
 // Solidity: function getTotalDelegated() view returns(uint256)
@@ -376,25 +469,46 @@ func (_StakePool *StakePoolTransactorSession) CheckAndClaimUndelegated() (*types
 	return _StakePool.Contract.CheckAndClaimUndelegated(&_StakePool.TransactOpts)
 }
 
-// Delegate is a paid mutator transaction binding the contract method 0x6d73e7c8.
+// Delegate is a paid mutator transaction binding the contract method 0x026e402b.
 //
-// Solidity: function delegate(address[] validatorList, uint256[] amountList) returns()
-func (_StakePool *StakePoolTransactor) Delegate(opts *bind.TransactOpts, validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
-	return _StakePool.contract.Transact(opts, "delegate", validatorList, amountList)
+// Solidity: function delegate(address validator, uint256 amount) returns()
+func (_StakePool *StakePoolTransactor) Delegate(opts *bind.TransactOpts, validator common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _StakePool.contract.Transact(opts, "delegate", validator, amount)
 }
 
-// Delegate is a paid mutator transaction binding the contract method 0x6d73e7c8.
+// Delegate is a paid mutator transaction binding the contract method 0x026e402b.
 //
-// Solidity: function delegate(address[] validatorList, uint256[] amountList) returns()
-func (_StakePool *StakePoolSession) Delegate(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
-	return _StakePool.Contract.Delegate(&_StakePool.TransactOpts, validatorList, amountList)
+// Solidity: function delegate(address validator, uint256 amount) returns()
+func (_StakePool *StakePoolSession) Delegate(validator common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.Delegate(&_StakePool.TransactOpts, validator, amount)
 }
 
-// Delegate is a paid mutator transaction binding the contract method 0x6d73e7c8.
+// Delegate is a paid mutator transaction binding the contract method 0x026e402b.
 //
-// Solidity: function delegate(address[] validatorList, uint256[] amountList) returns()
-func (_StakePool *StakePoolTransactorSession) Delegate(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
-	return _StakePool.Contract.Delegate(&_StakePool.TransactOpts, validatorList, amountList)
+// Solidity: function delegate(address validator, uint256 amount) returns()
+func (_StakePool *StakePoolTransactorSession) Delegate(validator common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.Delegate(&_StakePool.TransactOpts, validator, amount)
+}
+
+// DelegateVals is a paid mutator transaction binding the contract method 0x4e6c348e.
+//
+// Solidity: function delegateVals(address[] validatorList, uint256[] amountList) returns()
+func (_StakePool *StakePoolTransactor) DelegateVals(opts *bind.TransactOpts, validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
+	return _StakePool.contract.Transact(opts, "delegateVals", validatorList, amountList)
+}
+
+// DelegateVals is a paid mutator transaction binding the contract method 0x4e6c348e.
+//
+// Solidity: function delegateVals(address[] validatorList, uint256[] amountList) returns()
+func (_StakePool *StakePoolSession) DelegateVals(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.DelegateVals(&_StakePool.TransactOpts, validatorList, amountList)
+}
+
+// DelegateVals is a paid mutator transaction binding the contract method 0x4e6c348e.
+//
+// Solidity: function delegateVals(address[] validatorList, uint256[] amountList) returns()
+func (_StakePool *StakePoolTransactorSession) DelegateVals(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.DelegateVals(&_StakePool.TransactOpts, validatorList, amountList)
 }
 
 // Init is a paid mutator transaction binding the contract method 0xf09a4016.
@@ -439,25 +553,46 @@ func (_StakePool *StakePoolTransactorSession) Redelegate(validatorSrc common.Add
 	return _StakePool.Contract.Redelegate(&_StakePool.TransactOpts, validatorSrc, validatorDst, amount)
 }
 
-// Undelegate is a paid mutator transaction binding the contract method 0x73905f54.
+// Undelegate is a paid mutator transaction binding the contract method 0x4d99dd16.
 //
-// Solidity: function undelegate(address[] validatorList, uint256[] amountList) returns()
-func (_StakePool *StakePoolTransactor) Undelegate(opts *bind.TransactOpts, validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
-	return _StakePool.contract.Transact(opts, "undelegate", validatorList, amountList)
+// Solidity: function undelegate(address validator, uint256 amount) returns()
+func (_StakePool *StakePoolTransactor) Undelegate(opts *bind.TransactOpts, validator common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _StakePool.contract.Transact(opts, "undelegate", validator, amount)
 }
 
-// Undelegate is a paid mutator transaction binding the contract method 0x73905f54.
+// Undelegate is a paid mutator transaction binding the contract method 0x4d99dd16.
 //
-// Solidity: function undelegate(address[] validatorList, uint256[] amountList) returns()
-func (_StakePool *StakePoolSession) Undelegate(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
-	return _StakePool.Contract.Undelegate(&_StakePool.TransactOpts, validatorList, amountList)
+// Solidity: function undelegate(address validator, uint256 amount) returns()
+func (_StakePool *StakePoolSession) Undelegate(validator common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.Undelegate(&_StakePool.TransactOpts, validator, amount)
 }
 
-// Undelegate is a paid mutator transaction binding the contract method 0x73905f54.
+// Undelegate is a paid mutator transaction binding the contract method 0x4d99dd16.
 //
-// Solidity: function undelegate(address[] validatorList, uint256[] amountList) returns()
-func (_StakePool *StakePoolTransactorSession) Undelegate(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
-	return _StakePool.Contract.Undelegate(&_StakePool.TransactOpts, validatorList, amountList)
+// Solidity: function undelegate(address validator, uint256 amount) returns()
+func (_StakePool *StakePoolTransactorSession) Undelegate(validator common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.Undelegate(&_StakePool.TransactOpts, validator, amount)
+}
+
+// UndelegateVals is a paid mutator transaction binding the contract method 0x3dd9fe5c.
+//
+// Solidity: function undelegateVals(address[] validatorList, uint256[] amountList) returns()
+func (_StakePool *StakePoolTransactor) UndelegateVals(opts *bind.TransactOpts, validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
+	return _StakePool.contract.Transact(opts, "undelegateVals", validatorList, amountList)
+}
+
+// UndelegateVals is a paid mutator transaction binding the contract method 0x3dd9fe5c.
+//
+// Solidity: function undelegateVals(address[] validatorList, uint256[] amountList) returns()
+func (_StakePool *StakePoolSession) UndelegateVals(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.UndelegateVals(&_StakePool.TransactOpts, validatorList, amountList)
+}
+
+// UndelegateVals is a paid mutator transaction binding the contract method 0x3dd9fe5c.
+//
+// Solidity: function undelegateVals(address[] validatorList, uint256[] amountList) returns()
+func (_StakePool *StakePoolTransactorSession) UndelegateVals(validatorList []common.Address, amountList []*big.Int) (*types.Transaction, error) {
+	return _StakePool.Contract.UndelegateVals(&_StakePool.TransactOpts, validatorList, amountList)
 }
 
 // WithdrawForStaker is a paid mutator transaction binding the contract method 0x71aa38b5.
