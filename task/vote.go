@@ -41,11 +41,6 @@ func (t *Task) voteHandler() error {
 		return err
 	}
 
-	err = t.checkAndSettle(currentEra, latestEra, bondedPools, &latestCallOpts, &latestFilterOpts)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 

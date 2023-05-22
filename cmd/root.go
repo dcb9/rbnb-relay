@@ -26,11 +26,11 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, _ []string) error {
-
 		return nil
 	}
 
 	rootCmd.AddCommand(
+		genAccountCmd(),
 		startCmd(),
 		versionCmd(),
 	)
