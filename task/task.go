@@ -30,7 +30,7 @@ type Task struct {
 	stakeMangerAddress common.Address
 
 	// need init on start()
-	dev            bool
+	isDev          bool
 	bscSideChainId string
 
 	bscClient            *shared.Client
@@ -53,14 +53,16 @@ func NewTask(cfg *config.Config, keyPair *secp256k1.Keypair) (*Task, error) {
 	if maxGasPriceDeci.LessThanOrEqual(decimal.Zero) {
 		return nil, fmt.Errorf("max gas price is zero")
 	}
+
 	s := &Task{
-		taskTicker:     10,
-		stop:           make(chan struct{}),
-		bscRpcEndpoint: cfg.BscRpcEndpoint,
-		bcApiEndpoint:  cfg.BcApiEndpoint,
-		keyPair:        keyPair,
-		gasLimit:       gasLimitDeci.BigInt(),
-		maxGasPrice:    maxGasPriceDeci.BigInt(),
+		taskTicker:         15,
+		stop:               make(chan struct{}),
+		bscRpcEndpoint:     cfg.BscRpcEndpoint,
+		bcApiEndpoint:      cfg.BcApiEndpoint,
+		keyPair:            keyPair,
+		gasLimit:           gasLimitDeci.BigInt(),
+		maxGasPrice:        maxGasPriceDeci.BigInt(),
+		stakeMangerAddress: common.HexToAddress(cfg.StakeMangerAddress),
 	}
 
 	return s, nil
@@ -81,10 +83,10 @@ func (task *Task) Start() error {
 	}
 	switch chainId.Uint64() {
 	case 56:
-		task.dev = false
+		task.isDev = false
 		task.bscSideChainId = "bsc"
 	case 97:
-		task.dev = true
+		task.isDev = true
 		task.bscSideChainId = "chapel"
 	default:
 		return fmt.Errorf("unsupport chainId: %d", chainId.Int64())

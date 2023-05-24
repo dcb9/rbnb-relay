@@ -29,10 +29,8 @@ func versionCmd() *cobra.Command {
 			}
 
 			v := version{
-				Version:    Version,
-				Commit:     Commit,
-				GoEthereum: dependencyVersions["github.com/ethereum/go-ethereum"],
-				Prysm:      dependencyVersions["github.com/prysmaticlabs/prysm/v3"],
+				Version: Version,
+				Commit:  Commit,
 			}
 
 			bz, _ := json.MarshalIndent(v, "", "  ")
@@ -46,10 +44,8 @@ func versionCmd() *cobra.Command {
 }
 
 type version struct {
-	Version    string `json:"version"`
-	Commit     string `json:"commit"`
-	GoEthereum string `json:"go-ethereum"`
-	Prysm      string `json:"prysm"`
+	Version string `json:"version"`
+	Commit  string `json:"commit"`
 }
 
 var logo = `

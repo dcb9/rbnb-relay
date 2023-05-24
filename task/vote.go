@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"time"
 
 	"rbnb-relay/bindings/StakePool"
 
@@ -20,7 +21,6 @@ func (t *Task) voteHandler() error {
 		From:    [20]byte{},
 		Context: context.Background(),
 	}
-	latestFilterOpts := bind.FilterOpts{Context: context.Background()}
 
 	currentEra, err := t.contractStakeManager.CurrentEra(&latestCallOpts)
 	if err != nil {
@@ -35,7 +35,7 @@ func (t *Task) voteHandler() error {
 		return err
 	}
 
-	err = t.checkAndVoteNewEra(currentEra, latestEra, bondedPools, &latestCallOpts, &latestFilterOpts)
+	err = t.checkAndVoteNewEra(currentEra, latestEra, bondedPools, &latestCallOpts)
 	if err != nil {
 		return err
 	}
@@ -43,10 +43,11 @@ func (t *Task) voteHandler() error {
 	return nil
 }
 
-func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []common.Address, latestCallOpts *bind.CallOpts, latestFilterOpts *bind.FilterOpts) error {
+func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []common.Address, latestCallOpts *bind.CallOpts) error {
 	// case 0: currentEra==latestEra
 	// no need deal
 	if currentEra.Cmp(latestEra) == 0 {
+		logrus.Debug("currentEra==latestEra no need deal")
 		return nil
 	}
 
@@ -66,7 +67,7 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 			return err
 		}
 
-		// case 1: currentEra==latestEra
+		// case 1: currentEra>latestEra && requestInFly
 		// no need deal
 		if requestInFly[0].Cmp(big.NewInt(0)) != 0 || requestInFly[1].Cmp(big.NewInt(0)) != 0 || requestInFly[2].Cmp(big.NewInt(0)) != 0 {
 			logrus.Warnf("pool %s, request is in fly %v, will wait", pool.String(), requestInFly)
@@ -84,6 +85,10 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 		lastRewardTimestampBig := big.NewInt(lastRewardTimestamp)
 		newRewardBig := new(big.Int).Mul(big.NewInt(reward), big.NewInt(1e10)) //decimals 8 on bc, 18 on bsc
 
+		if t.isDev {
+			lastRewardTimestampBig = latestRewardTimestampOnChain
+		}
+
 		if latestRewardTimestampOnChain.Cmp(lastRewardTimestampBig) > 0 {
 			return fmt.Errorf("pool %s, latestRewardTimestamp %d is big than lastRewardTimestamp %d", pool.String(), latestRewardTimestampOnChain.Int64(), lastRewardTimestampBig.Int64())
 		}
@@ -96,6 +101,11 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 	}
 
 	//todo check ratelimit
+	logrus.WithFields(logrus.Fields{
+		"era":                 willUseEra.Int64(),
+		"newRewardList":       newRewardList,
+		"rewardTimestampList": lastRewardTimestampList,
+	}).Info("newEra")
 
 	proposalId := NewEraProposalID(willUseEra, bondedPools, newRewardList, lastRewardTimestampList)
 	hasVoted, err := t.contractStakeManager.HasVoted(latestCallOpts, proposalId, t.bscClient.Opts().From)
@@ -104,6 +114,17 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 	}
 
 	if !hasVoted {
+		// check era again
+		latestEra, err := t.contractStakeManager.LatestEra(latestCallOpts)
+		if err != nil {
+			return err
+		}
+		if willUseEra.Cmp(new(big.Int).Add(latestEra, big.NewInt(1))) != 0 {
+			logrus.Debugf("willUseEra: %d not match latestEra: %d, no need deal", willUseEra.Int64(), latestEra.Int64())
+			return nil
+		}
+
+		// send tx
 		err = t.bscClient.LockAndUpdateOpts(t.gasLimit, big.NewInt(0))
 		if err != nil {
 			return err
@@ -114,10 +135,34 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 			return err
 		}
 
-		err = t.waitTxOk(tx.Hash())
+		err = t.waitTxOnChain(tx.Hash())
 		if err != nil {
-			return errors.Wrap(err, "wait Tx failed")
+			return errors.Wrap(err, "waitTxOnChain failed")
 		}
+	}
+
+	//wait until newEra executed
+	retry := 0
+	for {
+		// wait 2h
+		if retry > 2*60*5 {
+			return fmt.Errorf("wait newEra executed failed")
+		}
+		latestEra, err := t.contractStakeManager.LatestEra(latestCallOpts)
+		if err != nil {
+			logrus.Warnf("get latestEra failed: %s", err.Error())
+			time.Sleep(12 * time.Second)
+			retry++
+			continue
+		}
+
+		if latestEra.Cmp(willUseEra) < 0 {
+			logrus.Warnf("waiting newEra executed...")
+			time.Sleep(12 * time.Second)
+			retry++
+			continue
+		}
+		break
 	}
 
 	return nil

@@ -128,12 +128,12 @@ func getStakingReward(url string) (*StakingReward, error) {
 	return sr, nil
 }
 
-func (task *Task) waitTxOk(txHash common.Hash) (err error) {
-
+func (task *Task) waitTxOnChain(txHash common.Hash) (err error) {
 	retry := 0
+	txSuccess := false
 	for {
 		if retry > utils.RetryLimit {
-			return fmt.Errorf("waitTx %s reach retry limit", txHash.String())
+			return fmt.Errorf("waitTxOnChain %s reach retry limit", txHash.String())
 		}
 		_, pending, err := task.bscClient.TransactionByHash(txHash)
 		if err != nil {
@@ -179,17 +179,17 @@ func (task *Task) waitTxOk(txHash common.Hash) (err error) {
 				}
 
 				if receipt.Status == 1 { //success
-					break
-				} else { //failed
-					return fmt.Errorf("tx %s failed", txHash.String())
+					txSuccess = true
 				}
+				break
 			}
 		}
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"tx": txHash.String(),
-	}).Info("tx send ok")
+		"tx":         txHash.String(),
+		"tx success": txSuccess,
+	}).Info("tx already on chain")
 
 	return nil
 }

@@ -51,6 +51,10 @@ func startCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			configBcEndpoint, err := cmd.Flags().GetString(flagBcEndpoint)
+			if err != nil {
+				return err
+			}
 			configAccount, err := cmd.Flags().GetString(flagAccount)
 			if err != nil {
 				return err
@@ -72,7 +76,7 @@ func startCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if !common.IsHexAddress(configAccount) {
+			if !common.IsHexAddress(configStakeManager) {
 				return fmt.Errorf("stake manager not hex address: %s", configAccount)
 			}
 			// check log level
@@ -92,6 +96,7 @@ func startCmd() *cobra.Command {
 
 			cfg := config.Config{}
 			cfg.BscRpcEndpoint = configBscEndpoint
+			cfg.BcApiEndpoint = configBcEndpoint
 			cfg.Account = configAccount
 			cfg.GasLimit = configGasLimit
 			cfg.MaxGasPrice = configMaxGasPrice

@@ -49,11 +49,11 @@ func NewClient(endpoint string, kp *secp256k1.Keypair, gasLimit, maxGasPrice *bi
 		maxGasPrice: maxGasPrice,
 	}
 
-	if client.gasLimit.Uint64() == 0 {
+	if client.gasLimit == nil || client.gasLimit.Uint64() == 0 {
 		client.gasLimit = DefaultGasLimit
 	}
 
-	if client.maxGasPrice.Uint64() == 0 {
+	if client.maxGasPrice == nil || client.maxGasPrice.Uint64() == 0 {
 		client.maxGasPrice = DefaultGasPrice
 	}
 
