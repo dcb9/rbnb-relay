@@ -129,18 +129,13 @@ func getStakingReward(url string) (*StakingReward, error) {
 }
 
 func (task *Task) waitTxOk(txHash common.Hash) (err error) {
-	defer func() {
-		if err != nil {
-			utils.ShutdownRequestChannel <- struct{}{}
-		}
-	}()
 
 	retry := 0
 	for {
 		if retry > utils.RetryLimit {
 			return fmt.Errorf("waitTx %s reach retry limit", txHash.String())
 		}
-		_, pending, err := task.client.TransactionByHash(txHash)
+		_, pending, err := task.bscClient.TransactionByHash(txHash)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"hash": txHash.String(),
@@ -169,7 +164,7 @@ func (task *Task) waitTxOk(txHash common.Hash) (err error) {
 						return fmt.Errorf("TransactionReceipt %s reach retry limit", txHash.String())
 					}
 
-					receipt, err = task.client.TransactionReceipt(txHash)
+					receipt, err = task.bscClient.TransactionReceipt(txHash)
 					if err != nil {
 						logrus.WithFields(logrus.Fields{
 							"hash": txHash.String(),

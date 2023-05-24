@@ -33,7 +33,7 @@ type Task struct {
 	dev            bool
 	bscSideChainId string
 
-	client               *shared.Client
+	bscClient            *shared.Client
 	contractStakeManager *stake_manager.StakeManager
 }
 
@@ -72,23 +72,25 @@ func (task *Task) Start() error {
 		return err
 	}
 
-	task.client = client
+	task.bscClient = client
 
 	// set domain by chainId
-	chainId, err := task.client.Client().ChainID(context.Background())
+	chainId, err := task.bscClient.Client().ChainID(context.Background())
 	if err != nil {
 		return err
 	}
 	switch chainId.Uint64() {
-	case 1:
+	case 56:
 		task.dev = false
-	case 11155111: // sepolia
+		task.bscSideChainId = "bsc"
+	case 97:
 		task.dev = true
+		task.bscSideChainId = "chapel"
 	default:
 		return fmt.Errorf("unsupport chainId: %d", chainId.Int64())
 	}
 
-	stakeManger, err := stake_manager.NewStakeManager(task.stakeMangerAddress, task.client.Client())
+	stakeManger, err := stake_manager.NewStakeManager(task.stakeMangerAddress, task.bscClient.Client())
 	if err != nil {
 		return err
 	}
@@ -107,12 +109,7 @@ func (task *Task) Handler() {
 	ticker := time.NewTicker(time.Duration(task.taskTicker) * time.Second)
 	defer ticker.Stop()
 
-	retry := 0
 	for {
-		if retry > utils.RetryLimit {
-			utils.ShutdownRequestChannel <- struct{}{}
-			return
-		}
 
 		select {
 		case <-task.stop:
@@ -123,10 +120,9 @@ func (task *Task) Handler() {
 			err := task.voteHandler()
 			if err != nil {
 				logrus.Warnf("vote handler failed, err: %s", err.Error())
-				retry++
 				continue
 			}
-			retry = 0
+			logrus.Debug("vote handler end -----------")
 		}
 	}
 }

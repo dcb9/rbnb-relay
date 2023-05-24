@@ -36,6 +36,18 @@
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "validator",
+                "type": "address"
+            },
+            {
+                "indexed": false,
                 "internalType": "uint256",
                 "name": "govDelegated",
                 "type": "uint256"
@@ -54,6 +66,19 @@
         "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "bondingDuration",
+                "type": "uint256"
+            }
+        ],
+        "name": "SetUnbondingDuration",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": true,
                 "internalType": "uint256",
                 "name": "era",
@@ -62,7 +87,7 @@
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "poolAddress",
+                "name": "pool",
                 "type": "address"
             }
         ],
@@ -81,7 +106,7 @@
             {
                 "indexed": false,
                 "internalType": "address",
-                "name": "stakePool",
+                "name": "poolAddress",
                 "type": "address"
             },
             {
@@ -112,7 +137,7 @@
             {
                 "indexed": false,
                 "internalType": "address",
-                "name": "stakePool",
+                "name": "poolAddress",
                 "type": "address"
             },
             {
@@ -155,7 +180,7 @@
             {
                 "indexed": false,
                 "internalType": "address",
-                "name": "stakePool",
+                "name": "poolAddress",
                 "type": "address"
             },
             {
@@ -178,29 +203,11 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePool",
+                "name": "_poolAddress",
                 "type": "address"
             }
         ],
         "name": "addStakePool",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_stakePool",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_validator",
-                "type": "address"
-            }
-        ],
-        "name": "addValidator",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -554,7 +561,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePoolAddress",
+                "name": "_poolAddress",
                 "type": "address"
             },
             {
@@ -816,7 +823,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePool",
+                "name": "_poolAddress",
                 "type": "address"
             },
             {
@@ -857,7 +864,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePool",
+                "name": "_poolAddress",
                 "type": "address"
             }
         ],
@@ -870,7 +877,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePool",
+                "name": "_poolAddress",
                 "type": "address"
             },
             {
@@ -967,7 +974,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePoolAddress",
+                "name": "_poolAddress",
                 "type": "address"
             },
             {
@@ -1142,7 +1149,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_stakePoolAddress",
+                "name": "_poolAddress",
                 "type": "address"
             },
             {

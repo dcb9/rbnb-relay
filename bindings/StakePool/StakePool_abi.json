@@ -97,6 +97,30 @@
         "inputs": [
             {
                 "internalType": "address",
+                "name": "valSrc",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "valDst",
+                "type": "address"
+            }
+        ],
+        "name": "getPendingRedelegateTime",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
                 "name": "validator",
                 "type": "address"
             }

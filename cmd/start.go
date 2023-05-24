@@ -27,11 +27,11 @@ var (
 	flagLogLevel     = "log_level"
 
 	defaultHomePath    = filepath.Join(os.Getenv("HOME"), ".stafi/rbnb")
-	defaultBscEndpoint = ""
-	defaultBcEndpoint  = ""
-	defaultGasLimit    = ""
-	defaultMaxGasPrice = ""
-	defaultStakeManger = ""
+	defaultBscEndpoint = "https://bsc-dataseed1.binance.org"
+	defaultBcEndpoint  = "https://api.binance.org"
+	defaultGasLimit    = "2000000"
+	defaultMaxGasPrice = "20000000000"
+	defaultStakeManger = "" //todo update address
 	defaultLogLevel    = logrus.InfoLevel.String()
 )
 
