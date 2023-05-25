@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"rbnb-relay/bindings/StakePool"
+	"rbnb-relay/pkg/utils"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -107,7 +107,7 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 		"rewardTimestampList": lastRewardTimestampList,
 	}).Info("newEra")
 
-	proposalId := NewEraProposalID(willUseEra, bondedPools, newRewardList, lastRewardTimestampList)
+	proposalId := utils.NewEraProposalID(willUseEra, bondedPools, newRewardList, lastRewardTimestampList)
 	hasVoted, err := t.contractStakeManager.HasVoted(latestCallOpts, proposalId, t.bscClient.Opts().From)
 	if err != nil {
 		return err
@@ -166,28 +166,4 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 	}
 
 	return nil
-}
-
-// uint256 _era,
-// address[] calldata _poolAddressList,
-// uint256[] calldata _undistributedRewardList,
-// uint256[] calldata _latestRewardTimestampList
-func NewEraProposalID(_era *big.Int, _poolAddressList []common.Address, _undistributedRewardList, _latestRewardTimestampList []*big.Int) [32]byte {
-
-	poolAddressBts := make([]byte, 0)
-	for _, poolAddress := range _poolAddressList {
-		poolAddressBts = append(poolAddressBts, common.LeftPadBytes(poolAddress.Bytes(), 32)...)
-	}
-
-	rewardBts := make([]byte, 0)
-	for _, reward := range _undistributedRewardList {
-		rewardBts = append(rewardBts, common.LeftPadBytes(reward.Bytes(), 32)...)
-	}
-
-	rewardTimestampBts := make([]byte, 0)
-	for _, rewardTimestamp := range _latestRewardTimestampList {
-		rewardTimestampBts = append(rewardTimestampBts, common.LeftPadBytes(rewardTimestamp.Bytes(), 32)...)
-	}
-
-	return crypto.Keccak256Hash([]byte("newEra"), common.LeftPadBytes(_era.Bytes(), 32), poolAddressBts, rewardBts, rewardTimestampBts)
 }

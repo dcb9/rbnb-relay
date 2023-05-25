@@ -2,8 +2,11 @@ package utils
 
 import (
 	"crypto/sha256"
+	"math/big"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	bncCmnTypes "github.com/stafiprotocol/go-sdk/common/types"
 )
 
@@ -45,4 +48,28 @@ func XOR(a, b []byte) []byte {
 		c[i] = a[i] ^ b[i]
 	}
 	return c
+}
+
+// uint256 _era,
+// address[] calldata _poolAddressList,
+// uint256[] calldata _undistributedRewardList,
+// uint256[] calldata _latestRewardTimestampList
+func NewEraProposalID(_era *big.Int, _poolAddressList []common.Address, _undistributedRewardList, _latestRewardTimestampList []*big.Int) [32]byte {
+
+	poolAddressBts := make([]byte, 0)
+	for _, poolAddress := range _poolAddressList {
+		poolAddressBts = append(poolAddressBts, common.LeftPadBytes(poolAddress.Bytes(), 32)...)
+	}
+
+	rewardBts := make([]byte, 0)
+	for _, reward := range _undistributedRewardList {
+		rewardBts = append(rewardBts, common.LeftPadBytes(reward.Bytes(), 32)...)
+	}
+
+	rewardTimestampBts := make([]byte, 0)
+	for _, rewardTimestamp := range _latestRewardTimestampList {
+		rewardTimestampBts = append(rewardTimestampBts, common.LeftPadBytes(rewardTimestamp.Bytes(), 32)...)
+	}
+
+	return crypto.Keccak256Hash([]byte("newEra"), common.LeftPadBytes(_era.Bytes(), 32), poolAddressBts, rewardBts, rewardTimestampBts)
 }
