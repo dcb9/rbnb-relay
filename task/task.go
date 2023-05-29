@@ -12,10 +12,13 @@ import (
 	"rbnb-relay/bindings/StakeManager"
 	"rbnb-relay/pkg/utils"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"github.com/stafiprotocol/chainbridge/utils/crypto/secp256k1"
+	bncCmnTypes "github.com/stafiprotocol/go-sdk/common/types"
 )
 
 type Task struct {
@@ -88,6 +91,7 @@ func (task *Task) Start() error {
 	case 97:
 		task.isDev = true
 		task.bscSideChainId = "chapel"
+		bncCmnTypes.Network = bncCmnTypes.TestNetwork
 	default:
 		return fmt.Errorf("unsupport chainId: %d", chainId.Int64())
 	}
@@ -96,7 +100,26 @@ func (task *Task) Start() error {
 	if err != nil {
 		return err
 	}
+	bondedPools, err := stakeManger.GetBondedPools(&bind.CallOpts{
+		Context: context.Background(),
+	})
+	if err != nil {
+		return err
+	}
+	if len(bondedPools) == 0 {
+		return fmt.Errorf("no bonded pools")
+	}
 	task.contractStakeManager = stakeManger
+
+	// check bc endpoint
+	timestamp := time.Now().Unix() - 30*24*60*60
+	reward, _, err := utils.NewRewardOnBcAfterTimestamp(task.bcApiEndpoint, task.bscSideChainId, bondedPools[0], timestamp)
+	if err != nil {
+		return fmt.Errorf("query pool: %s reward from bc api: %s failed, err: %s", bondedPools[0].String(), task.bcApiEndpoint, err.Error())
+	}
+	if reward == 0 {
+		return fmt.Errorf("query pool: %s reward from bc api: %s failed, reward is zero", bondedPools[0].String(), task.bcApiEndpoint)
+	}
 
 	utils.SafeGoWithRestart(task.Handler)
 	return nil
@@ -127,4 +150,70 @@ func (task *Task) Handler() {
 			logrus.Debug("vote handler end -----------")
 		}
 	}
+}
+
+func (task *Task) waitTxOnChain(txHash common.Hash) (err error) {
+	retry := 0
+	txSuccess := false
+	for {
+		if retry > utils.RetryLimit {
+			return fmt.Errorf("waitTxOnChain %s reach retry limit", txHash.String())
+		}
+		_, pending, err := task.bscClient.TransactionByHash(txHash)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"hash": txHash.String(),
+				"err":  err.Error(),
+			}).Warn("TransactionByHash")
+
+			time.Sleep(utils.RetryInterval)
+			retry++
+			continue
+		} else {
+			if pending {
+				logrus.WithFields(logrus.Fields{
+					"hash":    txHash.String(),
+					"pending": pending,
+				}).Warn("TransactionByHash")
+
+				time.Sleep(utils.RetryInterval)
+				retry++
+				continue
+			} else {
+				// check status
+				var receipt *types.Receipt
+				subRetry := 0
+				for {
+					if subRetry > utils.RetryLimit {
+						return fmt.Errorf("TransactionReceipt %s reach retry limit", txHash.String())
+					}
+
+					receipt, err = task.bscClient.TransactionReceipt(txHash)
+					if err != nil {
+						logrus.WithFields(logrus.Fields{
+							"hash": txHash.String(),
+							"err":  err.Error(),
+						}).Warn("tx TransactionReceipt")
+
+						time.Sleep(utils.RetryInterval)
+						subRetry++
+						continue
+					}
+					break
+				}
+
+				if receipt.Status == 1 { //success
+					txSuccess = true
+				}
+				break
+			}
+		}
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"tx":         txHash.String(),
+		"tx success": txSuccess,
+	}).Info("tx already on chain")
+
+	return nil
 }

@@ -78,16 +78,12 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 		if err != nil {
 			return err
 		}
-		reward, lastRewardTimestamp, err := t.NewRewardOnBcAfterTimestamp(pool, latestRewardTimestampOnChain.Int64())
+		reward, lastRewardTimestamp, err := utils.NewRewardOnBcAfterTimestamp(t.bcApiEndpoint, t.bscSideChainId, pool, latestRewardTimestampOnChain.Int64())
 		if err != nil {
 			return err
 		}
 		lastRewardTimestampBig := big.NewInt(lastRewardTimestamp)
 		newRewardBig := new(big.Int).Mul(big.NewInt(reward), big.NewInt(1e10)) //decimals 8 on bc, 18 on bsc
-
-		if t.isDev {
-			lastRewardTimestampBig = latestRewardTimestampOnChain
-		}
 
 		if latestRewardTimestampOnChain.Cmp(lastRewardTimestampBig) > 0 {
 			return fmt.Errorf("pool %s, latestRewardTimestamp %d is big than lastRewardTimestamp %d", pool.String(), latestRewardTimestampOnChain.Int64(), lastRewardTimestampBig.Int64())
