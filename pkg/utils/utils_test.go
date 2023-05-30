@@ -23,13 +23,13 @@ func TestProposalId(t *testing.T) {
 func TestNewReward(t *testing.T) {
 	bncCmnTypes.Network = bncCmnTypes.TestNetwork
 
-	reward, err := utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685318400+100, 1685404800+100)
+	reward, err := utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 0, 1682685051)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(reward)
 
-	reward, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685232000+100, 1685318400+100)
+	reward, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685331051, 1685439051)
 	if err != nil {
 		t.Fatal(err)
 	}

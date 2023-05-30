@@ -79,6 +79,10 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 			return err
 		}
 
+		if t.isDev && latestRewardTimestampOnChain.Sign() == 0 {
+			latestRewardTimestampOnChain = big.NewInt(1682739051)
+		}
+
 		// api res: "rewardTime": "2023-05-28T00:00:02.000+00:00", so we add 100s here
 		eraTimestamp := (willUseEra.Int64()+18033)*86400 + 100
 		lastRewardTimestampBig := big.NewInt(eraTimestamp)
@@ -93,6 +97,7 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 				lastRewardTimestampBig = latestRewardTimestampOnChain
 				break
 			}
+
 			eraReward, err = utils.NewRewardOnBcDu(t.bcApiEndpoint, t.bscSideChainId, pool, latestRewardTimestampOnChain.Int64(), eraTimestamp)
 			if err != nil {
 				return err
