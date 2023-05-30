@@ -113,7 +113,7 @@ func (task *Task) Start() error {
 
 	// check bc endpoint
 	timestamp := time.Now().Unix() - 30*24*60*60
-	reward, _, err := utils.NewRewardOnBcAfterTimestamp(task.bcApiEndpoint, task.bscSideChainId, bondedPools[0], timestamp)
+	reward, err := utils.NewRewardOnBcDu(task.bcApiEndpoint, task.bscSideChainId, bondedPools[0], timestamp, time.Now().Unix())
 	if err != nil {
 		return fmt.Errorf("query pool: %s reward from bc api: %s failed, err: %s", bondedPools[0].String(), task.bcApiEndpoint, err.Error())
 	}

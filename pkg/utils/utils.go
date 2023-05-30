@@ -81,25 +81,26 @@ func NewEraProposalID(_era *big.Int, _poolAddressList []common.Address, _undistr
 }
 
 // return reward decimals 8
-func NewRewardOnBcAfterTimestamp(bcApiEndpoint, bscSideChainId string, pool common.Address, timestamp int64) (int64, int64, error) {
+// reward between (startTimestamp, endTimestamp]
+func NewRewardOnBcDu(bcApiEndpoint, bscSideChainId string, pool common.Address, startTimestamp, endTimestamp int64) (int64, error) {
 	rewardAddress := GetBcRewardAddressFromBsc(pool[:]).String()
 
 	total, lastRewardTimestamp, err := RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, rewardAddress)
 	if err != nil {
-		return 0, 0, err
+		return 0, err
 	}
 	logrus.Debug("RewardOnBcDuTimes", "total", total, "lastRewardTimestamp", lastRewardTimestamp, "delegator", rewardAddress)
-	if timestamp >= lastRewardTimestamp {
-		return 0, lastRewardTimestamp, nil
+	if startTimestamp >= lastRewardTimestamp {
+		return 0, nil
 	}
 
-	rewardSum, err := stakingRewardAfter(bcApiEndpoint, bscSideChainId, rewardAddress, total, timestamp)
+	rewardSum, err := stakingRewardDu(bcApiEndpoint, bscSideChainId, rewardAddress, total, startTimestamp, endTimestamp)
 	if err != nil {
 		logrus.Warn("stakingReward error", "err", err)
-		return 0, 0, err
+		return 0, err
 	}
 
-	return rewardSum, lastRewardTimestamp, nil
+	return rewardSum, nil
 
 }
 
@@ -122,8 +123,9 @@ func RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, deleg
 	return sr.Total, rewardTime.Unix(), nil
 }
 
-func stakingRewardAfter(bcApiEndpoint, bscSideChainId, delegator string, total, timestamp int64) (int64, error) {
-	logrus.Debug("stakingReward", "delegator", delegator, "total", total, "timestamp", timestamp)
+// reward between (startTimestamp, endTimestamp]
+func stakingRewardDu(bcApiEndpoint, bscSideChainId, delegator string, total, startTimestamp, endTimestamp int64) (int64, error) {
+	logrus.Debug("stakingReward", "delegator", delegator, "total", total, "startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
 	offset := int64(0)
 	rewardSum := int64(0)
 
@@ -142,8 +144,12 @@ OUT:
 				return 0, err
 			}
 
-			if rewardTime.Unix() <= timestamp {
+			if rewardTime.Unix() <= startTimestamp {
 				break OUT
+			}
+
+			if rewardTime.Unix() > endTimestamp {
+				continue
 			}
 
 			rewardSum += int64(rd.Reward * 1e8)

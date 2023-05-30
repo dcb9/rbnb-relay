@@ -78,12 +78,34 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 		if err != nil {
 			return err
 		}
-		reward, lastRewardTimestamp, err := utils.NewRewardOnBcAfterTimestamp(t.bcApiEndpoint, t.bscSideChainId, pool, latestRewardTimestampOnChain.Int64())
-		if err != nil {
-			return err
+
+		// api res: "rewardTime": "2023-05-28T00:00:02.000+00:00", so we add 100s here
+		eraTimestamp := (willUseEra.Int64()+18033)*86400 + 100
+		lastRewardTimestampBig := big.NewInt(eraTimestamp)
+
+		eraReward := int64(0)
+		retry := 0
+		for {
+			if retry > 600 {
+				logrus.Warnf("no reward this era: %d, startTimestamp: %d endTimestamp: %d", willUseEra.Int64(), latestRewardTimestampOnChain.Int64(), eraTimestamp)
+				eraReward = 0
+				// not update latest reward timestamp if no reward
+				lastRewardTimestampBig = latestRewardTimestampOnChain
+				break
+			}
+			eraReward, err = utils.NewRewardOnBcDu(t.bcApiEndpoint, t.bscSideChainId, pool, latestRewardTimestampOnChain.Int64(), eraTimestamp)
+			if err != nil {
+				return err
+			}
+			if eraReward <= 0 {
+				time.Sleep(3 * time.Second)
+				retry++
+				continue
+			}
+			break
 		}
-		lastRewardTimestampBig := big.NewInt(lastRewardTimestamp)
-		newRewardBig := new(big.Int).Mul(big.NewInt(reward), big.NewInt(1e10)) //decimals 8 on bc, 18 on bsc
+
+		newRewardBig := new(big.Int).Mul(big.NewInt(eraReward), big.NewInt(1e10)) //decimals 8 on bc, 18 on bsc
 
 		if latestRewardTimestampOnChain.Cmp(lastRewardTimestampBig) > 0 {
 			return fmt.Errorf("pool %s, latestRewardTimestamp %d is big than lastRewardTimestamp %d", pool.String(), latestRewardTimestampOnChain.Int64(), lastRewardTimestampBig.Int64())
@@ -125,7 +147,7 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 		if err != nil {
 			return err
 		}
-		tx, err := t.contractStakeManager.NewEra(t.bscClient.Opts(), willUseEra, bondedPools, newRewardList, lastRewardTimestampList)
+		tx, err := t.contractStakeManager.NewEra(t.bscClient.Opts(), bondedPools, newRewardList, lastRewardTimestampList)
 		t.bscClient.UnlockOpts()
 		if err != nil {
 			return err
