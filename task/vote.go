@@ -191,6 +191,7 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 			retry++
 			continue
 		}
+		logrus.Info("newEra already executed success")
 		break
 	}
 
