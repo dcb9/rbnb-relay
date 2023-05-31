@@ -85,28 +85,34 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 
 		// api res: "rewardTime": "2023-05-28T00:00:02.000+00:00", so we add 100s here
 		eraTimestamp := (willUseEra.Int64()+18033)*86400 + 100
-		lastRewardTimestampBig := big.NewInt(eraTimestamp)
+		lastRewardTimestampBig := latestRewardTimestampOnChain
 
 		eraReward := int64(0)
 		retry := 0
 		for {
 			if retry > 600 {
 				logrus.Warnf("no reward this era: %d, startTimestamp: %d endTimestamp: %d", willUseEra.Int64(), latestRewardTimestampOnChain.Int64(), eraTimestamp)
+
+				//eraReward is zero
 				eraReward = 0
-				// not update latest reward timestamp if no reward
-				lastRewardTimestampBig = latestRewardTimestampOnChain
+				// not update latestRewardTimestamp if no reward
 				break
 			}
 
-			eraReward, err = utils.NewRewardOnBcDu(t.bcApiEndpoint, t.bscSideChainId, pool, latestRewardTimestampOnChain.Int64(), eraTimestamp)
+			newReward, maxRewardTimestamp, err := utils.NewRewardOnBcDu(t.bcApiEndpoint, t.bscSideChainId, pool, latestRewardTimestampOnChain.Int64(), eraTimestamp)
 			if err != nil {
 				return err
 			}
-			if eraReward <= 0 {
+			if newReward <= 0 {
 				time.Sleep(3 * time.Second)
 				retry++
 				continue
 			}
+
+			// update eraReward and latestRewardTimestamp
+			eraReward = newReward
+			lastRewardTimestampBig = big.NewInt(maxRewardTimestamp)
+
 			break
 		}
 

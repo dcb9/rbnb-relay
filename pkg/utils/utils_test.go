@@ -23,27 +23,27 @@ func TestProposalId(t *testing.T) {
 func TestNewReward(t *testing.T) {
 	bncCmnTypes.Network = bncCmnTypes.TestNetwork
 
-	reward, err := utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 0, 1682685051)
+	reward, max, err := utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 0, 1682685051)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(reward)
+	t.Log(reward, max)
 
-	reward, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685331051, 1685439051)
+	reward, max, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685331051, 1685439051)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(reward)
+	t.Log(reward, max)
 
-	reward, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685404800, 1685404800)
+	reward, max, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685404800, 1685404800)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(reward)
+	t.Log(reward, max)
 
-	reward, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685226312, 1685318400)
+	reward, max, err = utils.NewRewardOnBcDu("https://testnet-api.binance.org", "chapel", common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b"), 1685318300, 1685318400+100)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(reward)
+	t.Log(reward, max)
 }

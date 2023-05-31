@@ -1,6 +1,8 @@
 package shared_test
 
 import (
+	"context"
+	"math/big"
 	"rbnb-relay/shared"
 	"testing"
 
@@ -20,4 +22,10 @@ func TestClient(t *testing.T) {
 
 	t.Log(txRes.BlockHash)
 
+	block, err := client.Client().BlockByNumber(context.Background(), big.NewInt(30265875))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(block.Time())
 }

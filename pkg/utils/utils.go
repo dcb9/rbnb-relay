@@ -82,25 +82,25 @@ func NewEraProposalID(_era *big.Int, _poolAddressList []common.Address, _undistr
 
 // return reward decimals 8
 // reward between (startTimestamp, endTimestamp]
-func NewRewardOnBcDu(bcApiEndpoint, bscSideChainId string, pool common.Address, startTimestamp, endTimestamp int64) (int64, error) {
+func NewRewardOnBcDu(bcApiEndpoint, bscSideChainId string, pool common.Address, startTimestamp, endTimestamp int64) (int64, int64, error) {
 	rewardAddress := GetBcRewardAddressFromBsc(pool[:]).String()
 
 	total, lastRewardTimestamp, err := RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, rewardAddress)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 	logrus.Debug("RewardOnBcDuTimes", "total", total, "lastRewardTimestamp", lastRewardTimestamp, "delegator", rewardAddress)
 	if startTimestamp >= lastRewardTimestamp {
-		return 0, nil
+		return 0, 0, nil
 	}
 
-	rewardSum, err := stakingRewardDu(bcApiEndpoint, bscSideChainId, rewardAddress, total, startTimestamp, endTimestamp)
+	rewardSum, maxRewardTimestamp, err := stakingRewardDu(bcApiEndpoint, bscSideChainId, rewardAddress, total, startTimestamp, endTimestamp)
 	if err != nil {
 		logrus.Warn("stakingReward error", "err", err)
-		return 0, err
+		return 0, 0, err
 	}
 
-	return rewardSum, nil
+	return rewardSum, maxRewardTimestamp, nil
 
 }
 
@@ -124,10 +124,11 @@ func RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, deleg
 }
 
 // reward between (startTimestamp, endTimestamp]
-func stakingRewardDu(bcApiEndpoint, bscSideChainId, delegator string, total, startTimestamp, endTimestamp int64) (int64, error) {
+func stakingRewardDu(bcApiEndpoint, bscSideChainId, delegator string, total, startTimestamp, endTimestamp int64) (int64, int64, error) {
 	logrus.Debug("stakingReward", "delegator", delegator, "total", total, "startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
 	offset := int64(0)
 	rewardSum := int64(0)
+	maxRewardTimestamp := int64(0)
 
 OUT:
 	for i := total; i > 0; i -= 100 {
@@ -135,13 +136,13 @@ OUT:
 
 		sr, err := getStakingReward(api)
 		if err != nil {
-			return 0, errors.Wrap(err, "bnc.GetStakingReward")
+			return 0, 0, errors.Wrap(err, "bnc.GetStakingReward")
 		}
 
 		for _, rd := range sr.RewardDetails {
 			rewardTime, err := time.Parse(time.RFC3339, rd.RewardTime)
 			if err != nil {
-				return 0, err
+				return 0, 0, err
 			}
 
 			if rewardTime.Unix() <= startTimestamp {
@@ -153,13 +154,16 @@ OUT:
 			}
 
 			rewardSum += int64(rd.Reward * 1e8)
+			if rewardTime.Unix() > maxRewardTimestamp {
+				maxRewardTimestamp = rewardTime.Unix()
+			}
 			logrus.Debug("stakingReward", "add", rd.Reward, "height", rd.Height)
 		}
 
 		offset += 100
 	}
 
-	return rewardSum, nil
+	return rewardSum, maxRewardTimestamp, nil
 }
 
 func rewardApi(bcApiEndpoint, bscSideChainId, delegator string, limit, offset int64) string {
