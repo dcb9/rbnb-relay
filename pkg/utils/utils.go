@@ -35,7 +35,7 @@ func GetBcRewardAddressFromBsc(addrBts []byte) bncCmnTypes.AccAddress {
 }
 
 func GetStakeCAoB(sourceAddr []byte, salt string) bncCmnTypes.AccAddress {
-	saltBytes := []byte("Staking" + salt + "Address Anchor")
+	saltBytes := []byte("Staking " + salt + " Address Anchor")
 	return XOR(SumTruncated(saltBytes), sourceAddr)
 }
 
