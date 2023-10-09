@@ -23,12 +23,12 @@ func TestCAonB(t *testing.T) {
 	bncCmnTypes.Network = bncCmnTypes.TestNetwork
 	addr := common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b")
 	expected := "tbnb1hhzxw7aak98aemqa42prxzkpqzasynfhhtgtfl"
-	if got := GetBcDelegationAddressFromBsc(addr[:]).String(); got != expected {
+	if got := delegateCAoB(addr[:]).String(); got != expected {
 		t.Fatalf("expected: %s got: %s", expected, got)
 	}
 
 	expected = "tbnb1u2cr5h32qq00v0k7zcpxpevyp4stjz57p0p4r2"
-	if got := GetBcRewardAddressFromBsc(addr[:]).String(); got != expected {
+	if got := rewardCAoB(addr[:]).String(); got != expected {
 		t.Fatalf("expected: %s got: %s", expected, got)
 	}
 }

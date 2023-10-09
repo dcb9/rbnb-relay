@@ -26,29 +26,22 @@ var (
 	EraStateOperateAckExecuted = uint8(3)
 )
 
-func GetBcDelegationAddressFromBsc(addrBts []byte) bncCmnTypes.AccAddress {
-	return GetStakeCAoB(addrBts, DelegateCAoBSalt)
+// @see https://github.com/bnb-chain/BEPs/blob/bfe4fdb90b732af2e25c9581c5e5391aa00c8246/BEPs/BEP153.md#531-staking
+func delegateCAoB(addr []byte) bncCmnTypes.AccAddress {
+	hash := sha256.Sum256([]byte("Staking Delegate Address Anchor"))
+	return xor(hash[:bncCmnTypes.AddrLen], addr)
 }
 
-func GetBcRewardAddressFromBsc(addrBts []byte) bncCmnTypes.AccAddress {
-	return GetStakeCAoB(GetStakeCAoB(addrBts, DelegateCAoBSalt).Bytes(), RewardCAoBSalt)
+func rewardCAoB(addr []byte) bncCmnTypes.AccAddress {
+	hash := sha256.Sum256([]byte("Staking Reward Address Anchor"))
+	return xor(hash[:bncCmnTypes.AddrLen], delegateCAoB(addr))
 }
 
-func GetStakeCAoB(sourceAddr []byte, salt string) bncCmnTypes.AccAddress {
-	saltBytes := []byte("Staking " + salt + " Address Anchor")
-	return XOR(SumTruncated(saltBytes), sourceAddr)
-}
+func xor(a, b []byte) []byte {
+	if len(a) != len(b) {
+		panic(fmt.Sprintf("length of byte slices is not equivalent: %d != %d", len(a), len(b)))
+	}
 
-var TruncatedSize = 20
-var DelegateCAoBSalt string = "Delegate"
-var RewardCAoBSalt string = "Reward"
-
-func SumTruncated(bz []byte) []byte {
-	hash := sha256.Sum256(bz)
-	return hash[:TruncatedSize]
-}
-
-func XOR(a, b []byte) []byte {
 	c := make([]byte, len(a))
 	for i := 0; i < len(a); i++ {
 		c[i] = a[i] ^ b[i]
@@ -83,7 +76,7 @@ func NewEraProposalID(_era *big.Int, _poolAddressList []common.Address, _undistr
 // return reward decimals 8
 // reward between (startTimestamp, endTimestamp]
 func NewRewardOnBcDu(bcApiEndpoint, bscSideChainId string, pool common.Address, startTimestamp, endTimestamp int64) (int64, int64, error) {
-	rewardAddress := GetBcRewardAddressFromBsc(pool[:]).String()
+	rewardAddress := rewardCAoB(pool[:]).String()
 
 	total, lastRewardTimestamp, err := RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, rewardAddress)
 	if err != nil {
@@ -167,6 +160,7 @@ OUT:
 }
 
 func rewardApi(bcApiEndpoint, bscSideChainId, delegator string, limit, offset int64) string {
+	// @see https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/staking#v1stakingchainschain-iddelegatorsdelegatorrewards
 	return fmt.Sprintf("%s/v1/staking/chains/%s/delegators/%s/rewards?limit=%d&offset=%d", bcApiEndpoint, bscSideChainId, delegator, limit, offset)
 }
 
