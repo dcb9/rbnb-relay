@@ -33,6 +33,45 @@ func TestCAonB(t *testing.T) {
 	}
 }
 
+func TestDecodeValidatorAddr(t *testing.T) {
+	// get validator address on BSC from BC
+	validatorAddr := "bva1pnww8kx30sz4xfcqvn8wjhrn796nf4dq77hcpa"
+	addr, err := bncCmnTypes.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		t.Fatalf("err: %s", err.Error())
+	}
+
+	bscAddress := common.Address(addr).Hex()
+	expect := "0x0cDcE3d8D17c0553270064cEe95C73F17534d5A0"
+	if expect != bscAddress {
+		t.Fatalf("decode validator address: %s error: %s != %s", validatorAddr, expect, bscAddress)
+	}
+
+	validatorAddr = "bva1wlxpuycavhvjzq27l6qzv07uf6cymgj7wcrf74"
+	addr, err = bncCmnTypes.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		t.Fatalf("err: %s", err.Error())
+	}
+
+	bscAddress = common.Address(addr).Hex()
+	expect = "0x77Cc1e131d65d921015EfE80263Fdc4eb04dA25e"
+	if expect != bscAddress {
+		t.Fatalf("decode validator address: %s error: %s != %s", validatorAddr, expect, bscAddress)
+	}
+
+	validatorAddr = "bva18wgcs0k0glcmaxreweyeydu9mudtsftcxpkt4n"
+	addr, err = bncCmnTypes.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		t.Fatalf("err: %s", err.Error())
+	}
+
+	bscAddress = common.Address(addr).Hex()
+	expect = "0x3B91883ECf47F1Be98797649923785dF1ab82578"
+	if expect != bscAddress {
+		t.Fatalf("decode validator address: %s error: %s != %s", validatorAddr, expect, bscAddress)
+	}
+}
+
 func TestNewReward(t *testing.T) {
 	bncCmnTypes.Network = bncCmnTypes.TestNetwork
 
