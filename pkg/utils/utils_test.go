@@ -20,6 +20,59 @@ func TestProposalId(t *testing.T) {
 	t.Log(hex.EncodeToString(proposal[:]))
 }
 
+func TestCAonB(t *testing.T) {
+	bncCmnTypes.Network = bncCmnTypes.TestNetwork
+	addr := common.HexToAddress("0x44f95eef755ed4fbdc19e3e8f617773d23e44a5b")
+	expected := "tbnb1f6quqaz9e9f3v2cg85p83ss2cjmpzu7jmu5u4p"
+	if got := utils.GetBcDelegationAddressFromBsc(addr[:]).String(); got != expected {
+		t.Fatalf("expected: %s got: %s", expected, got)
+	}
+
+	expected = "tbnb1vmu2gwecm2045uccq5dtndtuptjkpykpfecrcj"
+	if got := utils.GetBcRewardAddressFromBsc(addr[:]).String(); got != expected {
+		t.Fatalf("expected: %s got: %s", expected, got)
+	}
+}
+
+func TestDecodeValidatorAddr(t *testing.T) {
+	// get validator address on BSC from BC
+	validatorAddr := "bva1pnww8kx30sz4xfcqvn8wjhrn796nf4dq77hcpa"
+	addr, err := bncCmnTypes.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		t.Fatalf("err: %s", err.Error())
+	}
+
+	bscAddress := common.Address(addr).Hex()
+	expect := "0x0cDcE3d8D17c0553270064cEe95C73F17534d5A0"
+	if expect != bscAddress {
+		t.Fatalf("decode validator address: %s error: %s != %s", validatorAddr, expect, bscAddress)
+	}
+
+	validatorAddr = "bva1wlxpuycavhvjzq27l6qzv07uf6cymgj7wcrf74"
+	addr, err = bncCmnTypes.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		t.Fatalf("err: %s", err.Error())
+	}
+
+	bscAddress = common.Address(addr).Hex()
+	expect = "0x77Cc1e131d65d921015EfE80263Fdc4eb04dA25e"
+	if expect != bscAddress {
+		t.Fatalf("decode validator address: %s error: %s != %s", validatorAddr, expect, bscAddress)
+	}
+
+	validatorAddr = "bva18wgcs0k0glcmaxreweyeydu9mudtsftcxpkt4n"
+	addr, err = bncCmnTypes.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		t.Fatalf("err: %s", err.Error())
+	}
+
+	bscAddress = common.Address(addr).Hex()
+	expect = "0x3B91883ECf47F1Be98797649923785dF1ab82578"
+	if expect != bscAddress {
+		t.Fatalf("decode validator address: %s error: %s != %s", validatorAddr, expect, bscAddress)
+	}
+}
+
 func TestNewReward(t *testing.T) {
 	bncCmnTypes.Network = bncCmnTypes.TestNetwork
 
