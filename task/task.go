@@ -9,7 +9,7 @@ import (
 	"rbnb-relay/pkg/config"
 	"rbnb-relay/shared"
 
-	"rbnb-relay/bindings/StakeManager"
+	stake_manager "rbnb-relay/bindings/StakeManager"
 	"rbnb-relay/pkg/utils"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -95,6 +95,7 @@ func (task *Task) Start() error {
 	default:
 		return fmt.Errorf("unsupport chainId: %d", chainId.Int64())
 	}
+	logrus.WithField("isDev", task.isDev).WithField("chainId", task.bscSideChainId).Infof("current chain")
 
 	stakeManger, err := stake_manager.NewStakeManager(task.stakeMangerAddress, task.bscClient.Client())
 	if err != nil {
