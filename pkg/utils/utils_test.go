@@ -34,6 +34,27 @@ func TestCAonB(t *testing.T) {
 	}
 }
 
+func TestValidatorAddrOnB(t *testing.T) {
+	{
+		valHexAddr := "0xa319b1e51f9c616ea25891805bc2f2ad15d50432"
+		addr := common.HexToAddress(valHexAddr)
+		valAddr := bncCmnTypes.ValAddress(addr[:])
+		expect := "bva15vvmregln3skagjcjxq9hshj452a2ppjkhperr"
+		if expect != valAddr.String() {
+			t.Fatalf("val hex addr: %s expected %s, got %s", valHexAddr, expect, valAddr.String())
+		}
+	}
+	{
+		valHexAddr := "0xa6d02bf4b1990fe3db8c97de198372221d8c37ad"
+		addr := common.HexToAddress(valHexAddr)
+		valAddr := bncCmnTypes.ValAddress(addr[:])
+		expect := "bva15mgzha93ny878kuvjl0pnqmjygwccdad08uecu"
+		if expect != valAddr.String() {
+			t.Fatalf("val hex addr: %s expected %s, got %s", valHexAddr, expect, valAddr.String())
+		}
+	}
+}
+
 func TestDecodeValidatorAddr(t *testing.T) {
 	// get validator address on BSC from BC
 	validatorAddr := "bva1pnww8kx30sz4xfcqvn8wjhrn796nf4dq77hcpa"
