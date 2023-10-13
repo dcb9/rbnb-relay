@@ -89,7 +89,11 @@ func NewRewardOnBcDu(bcApiEndpoint, bscSideChainId string, pool common.Address, 
 	if err != nil {
 		return 0, 0, err
 	}
-	logrus.Debug("RewardOnBcDuTimes", "total", total, "lastRewardTimestamp", lastRewardTimestamp, "delegator", rewardAddress)
+	logrus.WithFields(logrus.Fields{
+		"total":               total,
+		"lastRewardTimestamp": lastRewardTimestamp,
+		"delegator":           rewardAddress,
+	}).Debug("RewardOnBcDuTimes")
 	if startTimestamp >= lastRewardTimestamp {
 		return 0, 0, nil
 	}
@@ -106,7 +110,7 @@ func NewRewardOnBcDu(bcApiEndpoint, bscSideChainId string, pool common.Address, 
 
 func RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, delegator string) (int64, int64, error) {
 	api := rewardApi(bcApiEndpoint, bscSideChainId, delegator, 1, 0)
-	logrus.Debug("totalAndLastHeight rewardApi", "rewardApi", api)
+	logrus.WithField("rewardApi", api).Debug("totalAndLastHeight")
 	sr, err := getStakingReward(api)
 	if err != nil {
 		return 0, 0, err
@@ -125,7 +129,12 @@ func RewardTotalTimesAndLastRewardTimestamp(bcApiEndpoint, bscSideChainId, deleg
 
 // reward between (startTimestamp, endTimestamp]
 func stakingRewardDu(bcApiEndpoint, bscSideChainId, delegator string, total, startTimestamp, endTimestamp int64) (int64, int64, error) {
-	logrus.Debug("stakingReward", "delegator", delegator, "total", total, "startTimestamp", startTimestamp, "endTimestamp", endTimestamp)
+	logrus.WithFields(logrus.Fields{
+		"delegator":      delegator,
+		"total":          total,
+		"startTimestamp": startTimestamp,
+		"endTimestamp":   endTimestamp,
+	}).Debug("stakingRewardDu")
 	offset := int64(0)
 	rewardSum := int64(0)
 	maxRewardTimestamp := int64(0)
@@ -157,7 +166,7 @@ OUT:
 			if rewardTime.Unix() > maxRewardTimestamp {
 				maxRewardTimestamp = rewardTime.Unix()
 			}
-			logrus.Debug("stakingReward", "add", rd.Reward, "height", rd.Height)
+			logrus.WithFields(logrus.Fields{"add": rd.Reward, "height": rd.Height}).Debug("stakingReward")
 		}
 
 		offset += 100
