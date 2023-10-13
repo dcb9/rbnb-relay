@@ -13,14 +13,14 @@ get:
 	go mod tidy && go mod download
 
 build:
-	@echo " > \033[32mBuilding reth...\033[0m "
+	@echo " > \033[32mBuilding rbnb-relay...\033[0m "
 	go build -mod readonly $(BUILD_FLAGS) -o build/rbnb-relay main.go
 
 build-linux:
 	@GOOS=linux GOARCH=amd64 go build --mod readonly $(BUILD_FLAGS) -o ./build/rbnb-relay main.go
 
 install:
-	@echo " > \033[32mInstalling reth...\033[0m "
+	@echo " > \033[32mInstalling rbnb-relay...\033[0m "
 	go install -mod readonly $(BUILD_FLAGS) ./...
 
 abi:
