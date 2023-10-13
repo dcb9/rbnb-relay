@@ -35,6 +35,8 @@ type Task struct {
 	// need init on start()
 	isDev          bool
 	bscSideChainId string
+	eraOffset      int64
+	eraSeconds     int64
 
 	bscClient            *shared.Client
 	contractStakeManager *stake_manager.StakeManager
@@ -111,6 +113,18 @@ func (task *Task) Start() error {
 		return fmt.Errorf("no bonded pools")
 	}
 	task.contractStakeManager = stakeManger
+
+	eraOffset, err := stakeManger.EraOffset(&bind.CallOpts{Context: context.Background()})
+	if err != nil {
+		return err
+	}
+	task.eraOffset = eraOffset.Int64()
+
+	eraSeconds, err := stakeManger.EraSeconds(&bind.CallOpts{Context: context.Background()})
+	if err != nil {
+		return err
+	}
+	task.eraSeconds = eraSeconds.Int64()
 
 	// check bc endpoint
 	timestamp := time.Now().Unix() - 30*24*60*60

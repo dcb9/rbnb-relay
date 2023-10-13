@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"time"
 
-	"rbnb-relay/bindings/StakePool"
+	stake_pool "rbnb-relay/bindings/StakePool"
 	"rbnb-relay/pkg/utils"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -84,7 +84,7 @@ func (t *Task) checkAndVoteNewEra(currentEra, latestEra *big.Int, bondedPools []
 		}
 
 		// api res: "rewardTime": "2023-05-28T00:00:02.000+00:00", so we add 100s here
-		eraTimestamp := (willUseEra.Int64()+18033)*86400 + 100
+		eraTimestamp := (willUseEra.Int64()+t.eraOffset)*t.eraSeconds + 100
 		lastRewardTimestampBig := latestRewardTimestampOnChain
 
 		eraReward := int64(0)
